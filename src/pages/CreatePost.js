@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { auth, store, storage } from '../config/firebaseConfig';
 import { ref, uploadBytesResumable } from 'firebase/storage';
@@ -7,6 +7,7 @@ import { Loader } from '../components/Loader';
 import { v4 as uuidv4 } from 'uuid';
 
 const CreatePost = () => {
+  const formRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const postsCollectionRef = collection(store, 'posts');
@@ -60,6 +61,8 @@ const CreatePost = () => {
     } else {
       toast.warning('Image must be jpeg or png');
     }
+
+    formRef.current.reset();
   };
 
   return (
@@ -74,7 +77,7 @@ const CreatePost = () => {
         <h3 className='text-3xl mb-4 text-center border-b pb-3'>
           Create A Post
         </h3>
-        <form onSubmit={createPost} autoComplete='off'>
+        <form onSubmit={createPost} ref={formRef} autoComplete='off'>
           <div className='flex flex-col mb-4'>
             <label htmlFor='image' className='text-lg mb-2'>
               Image
