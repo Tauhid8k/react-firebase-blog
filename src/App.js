@@ -5,6 +5,7 @@ import { signOut } from 'firebase/auth';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import CreatePost from './pages/CreatePost';
 
 function App() {
   const [isAuth, setIsAuth] = useState(localStorage.getItem('isAuth'));
@@ -23,6 +24,7 @@ function App() {
       <main className='container'>
         <Routes>
           <Route path='/' element={<Home isAuth={isAuth} />} />
+          <Route path='/create' element={<CreatePost />} />
           <Route path='/login' element={<Login setIsAuth={setIsAuth} />} />
         </Routes>
       </main>
