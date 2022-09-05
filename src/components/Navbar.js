@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { BiHome, BiEdit, BiUser } from 'react-icons/bi';
+import { BiHome, BiEdit, BiUser, BiLogOutCircle } from 'react-icons/bi';
 
-const Navbar = () => {
+const Navbar = ({ isAuth, userSignOut }) => {
   return (
     <nav className='bg-white shadow py-3 mb-8'>
       <div className='container flex justify-between items-center'>
@@ -15,15 +15,28 @@ const Navbar = () => {
               Home
             </Link>
           </li>
+          {isAuth && (
+            <li>
+              <Link to='/create' className='flex items-center gap-1'>
+                <BiEdit /> Create
+              </Link>
+            </li>
+          )}
           <li>
-            <Link to='/create' className='flex items-center gap-1'>
-              <BiEdit /> Create
-            </Link>
-          </li>
-          <li>
-            <Link to='/login' className='flex items-center gap-1'>
-              <BiUser /> Login
-            </Link>
+            {!isAuth ? (
+              <Link to='/login' className='flex items-center gap-1'>
+                <BiUser /> Login
+              </Link>
+            ) : (
+              <button
+                type='button'
+                className='font-medium text-gray-700 flex items-center gap-1'
+                onClick={userSignOut}
+              >
+                <BiLogOutCircle />
+                Logout
+              </button>
+            )}
           </li>
         </ul>
       </div>
