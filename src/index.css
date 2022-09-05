@@ -17,6 +17,7 @@ body {
 .hamburger {
   height: 30px;
   display: none;
+  cursor: pointer;
 }
 .line {
   width: 28px;
@@ -44,6 +45,7 @@ body {
   margin-right: auto;
   padding: 5px;
   display: none;
+  cursor: pointer;
 }
 
 @media (max-width: 500px) {
