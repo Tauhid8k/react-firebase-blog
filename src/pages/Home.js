@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HiOutlineArrowNarrowRight } from 'react-icons/hi';
 import { getDocs, collection, deleteDoc, doc } from 'firebase/firestore';
-import { auth, store } from '../config/firebaseConfig';
+import { auth, store, storage } from '../config/firebaseConfig';
+import { ref, deleteObject } from 'firebase/storage';
 import { Loader } from '../components/Loader';
 import { FaTrash } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
@@ -26,12 +27,21 @@ const Home = ({ isAuth }) => {
     getPosts();
   }, []);
 
-  const deletePost = async (id) => {
+  const deletePost = async (id, img) => {
     const newList = postsList.filter((post) => post.id !== id);
     setPostsList(newList);
+    // Delete post from firebase
     const postDoc = doc(store, 'posts', id);
     await deleteDoc(postDoc);
-    toast.warn('Post Deleted');
+    // Delete image associated with the post
+    const deleteImgRef = ref(storage, img);
+    deleteObject(deleteImgRef)
+      .then(() => {
+        toast.warn('Post Deleted');
+      })
+      .catch((error) => {
+        toast.warn('Something went wrong !');
+      });
   };
 
   // Limit String Length
@@ -57,7 +67,7 @@ const Home = ({ isAuth }) => {
                 {isAuth && post.author.id === auth.currentUser.uid && (
                   <button
                     className='post-trash'
-                    onClick={() => deletePost(post.id)}
+                    onClick={() => deletePost(post.id, post.image)}
                   >
                     <FaTrash className='text-white text-sm' />
                   </button>
