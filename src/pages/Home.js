@@ -35,7 +35,7 @@ const Home = ({ isAuth }) => {
   };
 
   // Limit String Length
-  function limitStr(str, length = 130) {
+  function limitStr(str, length = 80) {
     return str.length > length ? str.substring(0, length) + '...' : str;
   }
 
@@ -52,25 +52,26 @@ const Home = ({ isAuth }) => {
         {!isLoading &&
           postsList.map((post) => (
             <div className='bg-white shadow rounded' key={post.id}>
-              <div className='p-5'>
-                <div className='flex justify-between gap-3 items-start'>
-                  <h3 className='text-2xl mb-2'>{post.title}</h3>
-                  {isAuth && post.author.id === auth.currentUser.uid && (
-                    <button
-                      className='post-trash'
-                      onClick={() => deletePost(post.id)}
-                    >
-                      <FaTrash className='text-red-500 text-sm' />
-                    </button>
-                  )}
-                </div>
-                <p className='mb-2'>{limitStr(post.postText)}</p>
+              <div className='post-img'>
+                <img src={post.image} alt='' />
+                {isAuth && post.author.id === auth.currentUser.uid && (
+                  <button
+                    className='post-trash'
+                    onClick={() => deletePost(post.id)}
+                  >
+                    <FaTrash className='text-white text-sm' />
+                  </button>
+                )}
+              </div>
+              <div className='p-4'>
+                <h3 className='text-2xl mb-2'>{limitStr(post.title, 50)}</h3>
+                <p className='mb-3'>{limitStr(post.postText)}</p>
                 <Link
                   to={`/posts/${post.id}`}
-                  className='flex gap-1 items-center text-lg text-gray-600'
+                  className='flex gap-1 items-center font-medium uppercase text-md text-gray-700'
                 >
-                  Read More
-                  <HiOutlineArrowNarrowRight className='read-more-icon' />
+                  <span>Read More</span>
+                  <HiOutlineArrowNarrowRight className='text-lg' />
                 </Link>
               </div>
             </div>

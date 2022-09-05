@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { auth, store, storage } from '../config/firebaseConfig';
-import { ref, uploadBytesResumable } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { ToastContainer, toast } from 'react-toastify';
 import { Loader } from '../components/Loader';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,6 +14,7 @@ const CreatePost = () => {
 
   const createPost = async (e) => {
     e.preventDefault();
+
     // Image must be present
     if (!e.target.image.files.length) {
       toast.warning('Image must be selected !');
@@ -29,40 +30,60 @@ const CreatePost = () => {
       toast.warning('Description is required !');
       return;
     }
+
+    // File ref
     const file = e.target.image.files[0];
+
     // File Size Limit
     const imageSize = (file.size / 1000000).toFixed(1);
     if (imageSize > 5) {
       toast.warning('Max size limit is 5 Mb');
       return;
     }
+
     // File Type only allowed for jpeg & png
     if (file.type === 'image/jpeg' || file.type === 'image/png') {
       // File name modification for preventing duplication
       const fileName = file.name.split('.')[0];
       const fileExtension = file.name.split('.').pop();
       const modifiedName = fileName + '_' + uuidv4() + '.' + fileExtension;
-      // Save Everything to firebase
+
       setIsLoading(true);
+      // Save image & get url
       const fileRef = ref(storage, `images/${modifiedName}`);
-      uploadBytesResumable(fileRef, file);
-      await addDoc(postsCollectionRef, {
-        image: modifiedName,
-        title: e.target.title.value,
-        postText: e.target.description.value,
-        author: {
-          id: auth.currentUser.uid,
-          name: auth.currentUser.displayName,
-        },
-        timestamp: serverTimestamp(),
-      });
-      setIsLoading(false);
-      toast.info('Post Added');
+      uploadBytes(fileRef, file)
+        .then((snapshot) => {
+          getDownloadURL(snapshot.ref)
+            .then(async (url) => {
+              // Save post title, img url, author & description
+              try {
+                await addDoc(postsCollectionRef, {
+                  image: url,
+                  title: e.target.title.value,
+                  postText: e.target.description.value,
+                  author: {
+                    id: auth.currentUser.uid,
+                    name: auth.currentUser.displayName,
+                  },
+                  timestamp: serverTimestamp(),
+                });
+                formRef.current.reset();
+                setIsLoading(false);
+                toast.info('Post Added');
+              } catch (error) {
+                toast.warning('Something went wrong !');
+              }
+            })
+            .catch((error) => {
+              toast.warning('Something went wrong !');
+            });
+        })
+        .catch((error) => {
+          toast.warning('Something went wrong !');
+        });
     } else {
       toast.warning('Image must be jpeg or png');
     }
-
-    formRef.current.reset();
   };
 
   return (
