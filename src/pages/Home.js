@@ -58,10 +58,13 @@ const Home = ({ isAuth }) => {
         theme='dark'
       />
       {isLoading && <Loader center={true} />}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
         {!isLoading &&
           postsList.map((post) => (
-            <div className='bg-white shadow rounded' key={post.id}>
+            <div
+              className='bg-white shadow rounded flex flex-col'
+              key={post.id}
+            >
               <div className='post-img'>
                 <img src={post.image} alt='' />
                 {isAuth && post.author.id === auth.currentUser.uid && (
@@ -73,12 +76,12 @@ const Home = ({ isAuth }) => {
                   </button>
                 )}
               </div>
-              <div className='p-4'>
+              <div className='p-4 flex flex-col h-full'>
                 <h3 className='text-2xl mb-2'>{limitStr(post.title, 50)}</h3>
                 <p className='mb-3'>{limitStr(post.postText)}</p>
                 <Link
                   to={`/posts/${post.id}`}
-                  className='flex gap-1 items-center font-medium uppercase text-md text-gray-700'
+                  className='flex gap-1 items-center mt-auto font-medium uppercase text-md text-gray-700'
                 >
                   <span>Read More</span>
                   <HiOutlineArrowNarrowRight className='text-lg' />
